@@ -1,0 +1,27 @@
+name:                bench-url-encode
+version:             0.1.0.0
+#synopsis:
+#description:
+homepage:            https://github.com/mt-caret/bench-url-encode#readme
+license:             BSD3
+author:              mt-caret
+maintainer:          mtakeda.enigsol@gmail.com
+copyright:           MIT
+category:            Web
+extra-source-files:
+- README.md
+
+dependencies:
+  - base >= 4.7 && < 5
+  - optparse-generic
+  - text
+  - bytestring
+  - HTTP
+  - http-types
+  - criterion
+  - hedgehog
+
+executables:
+  bench-url-encode:
+    source-dirs:      src
+    main:             Main.hs

@@ -74,19 +74,21 @@ customUrlEncode =
       | ch == '~' = False
       | otherwise = True
 
-propOldAndNewMatch :: H.Property
-propOldAndNewMatch =
-  H.property $ do
-    str <- H.forAll $ H.Gen.text (H.Range.linear 0 100) H.Gen.unicodeAll
-    oldUrlEncode str === newUrlEncode str
-
 tests :: IO Bool
 tests =
   H.checkParallel $
     H.Group
       "check old an new encodings match"
-      [ ("propOldAndNewMatch", propOldAndNewMatch)
+      [ ("propOldAndNewMatchAscii", propOldAndNewMatch H.Gen.ascii),
+        ("propOldAndNewMatchLatin1", propOldAndNewMatch H.Gen.latin1),
+        ("propOldAndNewMatchUnicode", propOldAndNewMatch H.Gen.unicode),
+        ("propOldAndNewMatchUnicodeAll", propOldAndNewMatch H.Gen.unicodeAll)
       ]
+  where
+    propOldAndNewMatch char =
+      H.property $ do
+        str <- H.forAll $ H.Gen.text (H.Range.linear 0 1000) char
+        oldUrlEncode str === newUrlEncode str
 
 main :: IO ()
 main = do
@@ -107,16 +109,3 @@ main = do
           bench "customUrlEncode" $ nf customUrlEncode wagahaiwaNekodearu
         ]
     ]
-
---opts <- getRecord "bench-url-encode"
---case opts of
---  Benchmark path -> do
---    fileContents <- TIO.readFile path
---    defaultMain
---      [ bgroup
---          "urlEncode"
---          [ bench "oldUrlEncode (HTTP)" $ nf oldUrlEncode fileContents,
---            bench "newUrlEncode (http-types)" $ nf newUrlEncode fileContents
---          ]
---      ]
---  Fuzz -> error "unimplemented"
